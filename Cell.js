@@ -44,8 +44,11 @@ function Cell(x, y, rad)
 
 	this.place = function(piece)
 	{
-		if(this.piece == 'n')
+		if(this.piece == 'n'){
 			this.piece = piece
+			return true
+		}
+		return false
 	}
 
 	this.tryPlace = function (piece) 

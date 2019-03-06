@@ -3,7 +3,7 @@ var toMove = 'w';
 var stateGame = 'initial'
 var placed;
 var countSpecial = 0;
-const BOARD_SIZE = 7;
+const BOARD_SIZE = 4;
 const RADIUS = 40;
 
 function setup() {
@@ -120,15 +120,17 @@ function play(cell) {
 			}
 			break;
 		case 'special':
-			countSpecial--;
+			
 			if(toMove == 'w'){
-				cell.place('b')
+				if(cell.place('b'))
+					countSpecial--
 				if(countSpecial == 0){
 					stateGame = 'placing'
 					toMove = 'b'
 				}
 			}else{
-				cell.place('w')
+				if(cell.place('w'))
+					countSpecial--
 				if(countSpecial == 0){
 					stateGame = 'placing'
 					toMove = 'w'
