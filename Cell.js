@@ -106,14 +106,14 @@ function Cell(x, y, rad)
 	this.hasSpecial = function(piece)
 	{
 		countSpecial = 0
-		for (var i = 0; i < this.adjacents.length; i++) {
+		for (var i = 0; i < 6; i++) {
 			var currentPiece = this.adjacents[i]
 			isSpecial = true
 			if(typeof(currentPiece) != 'undefined'){
 				if((piece == 'w' && currentPiece.piece !='b') || (piece == 'b' && currentPiece.piece !='w')){
 					isSpecial = false;
 				}else{
-					for (var j = 0; j < currentPiece.adjacents.length; j++) {
+					for (var j = 0; j < 6; j++) {
 						if(typeof(currentPiece.adjacents[j]) == 'undefined' || currentPiece.adjacents[j].piece != piece){
 							isSpecial = false;
 						}
