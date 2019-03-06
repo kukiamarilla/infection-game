@@ -1,11 +1,15 @@
 var board;
 var toMove = 'w';
 var stateGame = 'initial'
+var placed;
+var countSpecial = 0;
+const BOARD_SIZE = 7;
 const RADIUS = 40;
+
 function setup() {
 	// body...
 	createCanvas(innerWidth,innerHeight);
-	board = new Board(250, 100, RADIUS, 7);
+	board = new Board(250, 100, RADIUS, BOARD_SIZE);
 	board.buildBoard();
 }
 
@@ -30,6 +34,13 @@ function draw() {
 			}
 			break;
 		case 'sliding':
+			if(toMove == 'w'){
+				fill(0);
+			}else{
+				fill(255)
+			}
+			break;
+		case 'special':
 			if(toMove == 'w'){
 				fill(0);
 			}else{
@@ -88,19 +99,42 @@ function play(cell) {
 		case 'sliding':
 			if(toMove == 'w'){
 				if(cell.trySlide('b', placed)){
-					placed = null;
 					toMove = 'b'
 					stateGame = 'placing'
+					if(placed.hasSpecial('w')){
+						stateGame = 'special'
+						toMove = 'w'
+					}
+					placed = null;
 				}
 			}else{
 				if(cell.trySlide('w', placed)){
-					placed = null;
 					toMove = 'w'
 					stateGame = 'placing'
+					if(placed.hasSpecial('b')){
+						stateGame = 'special'
+						toMove = 'b'
+					}
+					placed = null;
 				}
 			}
 			break;
-
+		case 'special':
+			countSpecial--;
+			if(toMove == 'w'){
+				cell.place('b')
+				if(countSpecial == 0){
+					stateGame = 'placing'
+					toMove = 'b'
+				}
+			}else{
+				cell.place('w')
+				if(countSpecial == 0){
+					stateGame = 'placing'
+					toMove = 'w'
+				}
+			}
+			break;
 	}
 }
 

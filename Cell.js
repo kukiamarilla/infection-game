@@ -8,9 +8,15 @@ function Cell(x, y, rad)
 
 	this.draw = function()
 	{
+		if(this.playable()){
+			stroke(255);
+		}else{
+			stroke(0);
+		}
 		fill(220, 20, 20)
 		polygon(this.x, this.y, this.rad, 6)
 		var ap = this.rad * sqrt(3)/2;
+
 		noStroke();
 		if(this.piece == 'w'){
 			fill(255);
@@ -21,12 +27,14 @@ function Cell(x, y, rad)
 		}
 	}
 
-	this.clicked = function (x,y) {
+	this.clicked = function (x,y)
+	{
 		var ap = this.rad * sqrt(3)/2;
 		return dist(x, y, this.x, this.y) < ap;
 	}
 
-	this.isAdjacent = function (cell) {
+	this.isAdjacent = function (cell)
+	{
 		for (var i = 0; i < this.adjacents.length; i++) {
 			if(this.adjacents[i] == cell) 
 				return true;
@@ -34,11 +42,14 @@ function Cell(x, y, rad)
 		return false;
 	}
 
-	this.place = function(piece){
-		this.piece = piece
+	this.place = function(piece)
+	{
+		if(this.piece == 'n')
+			this.piece = piece
 	}
 
-	this.tryPlace = function (piece) {
+	this.tryPlace = function (piece) 
+	{
 		var canPlace = false;
 		if((piece == 'w' && this.piece == 'b') || (piece == 'b' && this.piece == 'w')){
 			for (var i = 0; i < this.adjacents.length; i++) {
@@ -51,7 +62,8 @@ function Cell(x, y, rad)
 
 		return canPlace;
 	}
-	this.trySlide = function (piece, placed) {
+	this.trySlide = function (piece, placed) 
+	{
 		if(this.piece == 'n' && this.isAdjacent(placed)){
 			this.piece = piece;
 			return true;
@@ -59,6 +71,64 @@ function Cell(x, y, rad)
 		return false;
 	}
 
+	this.playable = function ()
+	{
+		switch(stateGame){
+			case 'initial':
+				return true;
+				break;
+			case 'placing':
+				var canPlace = false;
+				if((toMove == 'w' && this.piece == 'b') || (toMove == 'b' && this.piece == 'w')){
+					for (var i = 0; i < this.adjacents.length; i++) {
+						if(typeof(this.adjacents[i]) != 'undefined' && this.adjacents[i].piece == 'n'){
+							canPlace = true;
+						}
+					}
+				}
+				return canPlace;
+				break;
+			case 'sliding':
+				if(this.piece == 'n' && this.isAdjacent(placed)){
+					return true;
+				}
+				return false;
+				break;
+			case 'special':
+				if(this.piece == 'n'){
+					return true;
+				}
+				return false;
+				break;
+
+		}
+	}
+	this.hasSpecial = function(piece)
+	{
+		countSpecial = 0
+		for (var i = 0; i < this.adjacents.length; i++) {
+			var currentPiece = this.adjacents[i]
+			isSpecial = true
+			if(typeof(currentPiece) != 'undefined'){
+				if((piece == 'w' && currentPiece.piece !='b') || (piece == 'b' && currentPiece.piece !='w')){
+					isSpecial = false;
+				}else{
+					for (var j = 0; j < currentPiece.adjacents.length; j++) {
+						if(typeof(currentPiece.adjacents[j]) == 'undefined' || currentPiece.adjacents[j].piece != piece){
+							isSpecial = false;
+						}
+					}
+				}	
+			}else{
+				isSpecial = false
+			}
+			if(isSpecial){
+				countSpecial++;
+				currentPiece.piece = 'n'
+			}
+		}
+		return countSpecial > 0;
+	}
 	this.setRightCell = function(cell)
 	{
 		this.adjacents[0] = cell;
